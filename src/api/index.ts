@@ -1,7 +1,7 @@
 import { http } from '@/utils/request'
 import type {
   Coach, Vehicle, Schedule, Complaint, Payment, Salary, Maintenance,
-  OperationLog, SysUser, Role, RoleKey,
+  OperationLog, SysUser, Role, RoleKey, Student, ExamRecord, StudentStatus,
 } from '@/types'
 
 // ===== 鉴权 =====
@@ -55,6 +55,21 @@ export const complaintApi = {
   list: (params: { status?: string; branchId?: number }) => http.get<any[]>('/api/complaints', params),
   resolve: (id: number, data: { status: string; result: string }) => http.post<any>(`/api/complaints/${id}/resolve`, data),
   create: (data: { coachId: number; studentId?: number; content: string }) => http.post<Complaint>('/api/complaints', data),
+}
+
+// ===== 学员 =====
+export interface StudentRow extends Student {
+  branchName?: string; coachName?: string
+}
+export interface StudentDetail extends Student {
+  branchName?: string
+  coachName?: string
+  exams: ExamRecord[]
+  payments: Payment[]
+}
+export const studentApi = {
+  list: (params: { branchId?: number; status?: StudentStatus; keyword?: string }) => http.get<StudentRow[]>('/api/students', params),
+  detail: (id: number) => http.get<StudentDetail>(`/api/students/${id}`),
 }
 
 // ===== 排班 =====

@@ -35,6 +35,8 @@ const routes: RouteRecordRaw[] = [
       { path: 'coach/review', name: 'coach-review', component: () => import('@/views/coach/CoachReview.vue'), meta: { title: '学员评价', icon: 'ChatLineSquare', group: '教练管理', roles: ['admin', 'branch'] } },
       { path: 'coach/complaint', name: 'coach-complaint', component: () => import('@/views/coach/CoachComplaint.vue'), meta: { title: '投诉记录', icon: 'Warning', group: '教练管理', roles: ['admin', 'branch'] } },
 
+      { path: 'student', name: 'student', component: () => import('@/views/student/StudentList.vue'), meta: { title: '学员档案', icon: 'User', group: '学员管理', roles: ['admin', 'branch'] } },
+
       { path: 'schedule', name: 'schedule', component: () => import('@/views/schedule/Schedule.vue'), meta: { title: '教练排班', icon: 'Calendar', group: '教练排班', roles: ['admin', 'branch', 'coach'] } },
 
       { path: 'vehicle', name: 'vehicle', component: () => import('@/views/vehicle/VehicleList.vue'), meta: { title: '车辆档案', icon: 'Van', group: '车辆管理', roles: ['admin', 'branch'] } },

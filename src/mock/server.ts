@@ -285,6 +285,41 @@ route('POST', '/api/complaints', ({ body }) => {
   return ok(c)
 })
 
+// ===================== 学员管理 =====================
+route('GET', '/api/students', ({ query }) => {
+  const branchId = query.branchId ? Number(query.branchId) : null
+  const status = query.status as string | undefined
+  const keyword = query.keyword as string | undefined
+  let list = db.students.slice()
+  if (branchId) list = list.filter((s) => s.branchId === branchId)
+  if (status && status !== 'all') list = list.filter((s) => s.status === status)
+  if (keyword) list = list.filter((s) => s.name.includes(keyword) || s.phone.includes(keyword))
+  return ok(list.map((s) => ({
+    ...s,
+    branchName: db.getBranch(s.branchId)?.name,
+    coachName: db.getCoach(s.coachId)?.name,
+  })))
+})
+
+route('GET', '/api/students/:id', ({ params }) => {
+  const id = Number(params.id)
+  const s = db.getStudent(id)
+  if (!s) return fail('学员不存在')
+  const exams = db.examRecords
+    .filter((e) => e.studentId === id)
+    .sort((a, b) => b.examDate.localeCompare(a.examDate))
+  const payments = db.payments
+    .filter((p) => p.studentId === id)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  return ok({
+    ...s,
+    branchName: db.getBranch(s.branchId)?.name,
+    coachName: db.getCoach(s.coachId)?.name,
+    exams,
+    payments,
+  })
+})
+
 // ===================== 排班管理 =====================
 route('GET', '/api/schedules', ({ query }) => {
   const coachId = query.coachId ? Number(query.coachId) : null
