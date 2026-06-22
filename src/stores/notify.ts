@@ -26,7 +26,10 @@ export const useNotifyStore = defineStore('notify', () => {
     try {
       await notifyApi.markRead(id)
       const item = list.value.find((n) => n.id === id)
-      if (item) item.read = 1
+      if (item) {
+        item.read = 1
+        list.value = [...list.value]
+      }
     } catch {
       // ignore
     }
@@ -36,6 +39,7 @@ export const useNotifyStore = defineStore('notify', () => {
     try {
       await notifyApi.markAllRead()
       list.value.forEach((n) => { n.read = 1 })
+      list.value = [...list.value]
     } catch {
       // ignore
     }

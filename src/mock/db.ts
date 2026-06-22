@@ -19,7 +19,7 @@ const rand = (min: number, max: number) => Math.floor(rng() * (max - min + 1)) +
 const pick = <T>(arr: T[]): T => arr[Math.floor(rng() * arr.length)]
 const chance = (p: number) => rng() < p
 const fmtDate = (d: Date) => d.toISOString().slice(0, 10)
-const today = new Date('2026-06-21')
+const today = new Date('2026-06-22')
 const addDays = (d: Date, n: number) => {
   const x = new Date(d)
   x.setDate(x.getDate() + n)

@@ -142,6 +142,12 @@ async function handleMarkAll() {
   }
   &.unread {
     background: rgba(217, 119, 6, 0.04);
+    .notify-title-text {
+      font-weight: 700;
+    }
+    .notify-content {
+      font-weight: 500;
+    }
   }
 }
 .notify-icon {
