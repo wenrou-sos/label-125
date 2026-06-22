@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useNotifyStore } from '@/stores/notify'
 import { NOTIFY_TYPE_MAP, type Notify } from '@/types'
@@ -9,10 +9,10 @@ import EmptyState from './EmptyState.vue'
 const router = useRouter()
 const notifyStore = useNotifyStore()
 
-const visible = defineModel<boolean>('visible', { default: false })
+const visible = ref(false)
 
-onMounted(() => {
-  if (!notifyStore.list.length) notifyStore.load()
+watch(visible, async (v) => {
+  if (v) await notifyStore.load()
 })
 
 function getIcon(type: Notify['type']) {

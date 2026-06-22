@@ -189,6 +189,8 @@ export interface Notify {
   link?: string
   read: 0 | 1
   createdAt: string
+  branchId?: number
+  sourceId?: number
 }
 
 export const NOTIFY_TYPE_MAP: Record<NotifyType, { label: string; icon: string; color: string }> = {

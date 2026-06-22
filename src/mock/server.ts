@@ -270,6 +270,14 @@ route('POST', '/api/complaints/:id/resolve', ({ params, body }) => {
   c.status = body.status || 'resolved'
   c.result = body.result || ''
   log('教练管理', '处理投诉', `处理投诉 #${c.id}`)
+  db.addNotify({
+    type: 'complaint',
+    title: '投诉已处理完成',
+    content: `针对教练 ${db.getCoach(c.coachId)?.name} 的投诉已处理：${c.result || '已妥善解决'}`,
+    link: '/coach/complaint',
+    branchId: c.branchId,
+    sourceId: c.id,
+  })
   return ok(c)
 })
 
@@ -511,7 +519,14 @@ route('POST', '/api/finance/salary/calculate', ({ body }) => {
     }
   })
   log('财务管理', '工资核算', `触发 ${month} 工资核算`)
-  return ok({ month, count: db.salaries.filter((s) => s.month === month).length })
+  const coachCount = db.salaries.filter((s) => s.month === month).length
+  db.addNotify({
+    type: 'salary',
+    title: '月度工资核算完成',
+    content: `${month} 工资已核算完成，共 ${coachCount} 名教练，请到工资核算页面查看并发放`,
+    link: '/finance/salary',
+  })
+  return ok({ month, count: coachCount })
 })
 
 route('GET', '/api/finance/revenue', ({ query }) => {
@@ -606,16 +621,7 @@ route('GET', '/api/notifies', ({ query }) => {
   if (branchId) {
     list = list.filter((n) => {
       if (n.type === 'salary') return true
-      if (n.type === 'complaint') {
-        const c = db.complaints.find((x) => x.id === Number(n.content.match(/#\d+/)?.[0]?.slice(1)))
-        return !c || c.branchId === branchId
-      }
-      if (n.type === 'vehicle') {
-        const plate = n.content.match(/车牌\s(\S+)/)?.[1]
-        const v = db.vehicles.find((x) => x.plate === plate)
-        return !v || v.branchId === branchId
-      }
-      return true
+      return n.branchId === undefined || n.branchId === branchId
     })
   }
   if (onlyUnread) list = list.filter((n) => n.read === 0)
