@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { buildMenu } from '@/router'
 import { ElMessageBox } from 'element-plus'
 import { ROLE_MAP } from '@/types'
+import NotificationDropdown from '@/components/NotificationDropdown.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -104,9 +105,7 @@ const sidebarWidth = computed(() => (collapsed.value ? '64px' : '232px'))
           </el-breadcrumb>
         </div>
         <div class="topbar-right">
-          <el-badge :value="auth.isHeadquarters ? 0 : 0" :hidden="true" class="topbar-icon-btn">
-            <el-button link><el-icon size="18"><Bell /></el-icon></el-button>
-          </el-badge>
+          <NotificationDropdown />
           <el-dropdown @command="(c) => c === 'logout' && logout()">
             <div class="user-chip">
               <div class="user-avatar" :style="{ background: auth.user?.roleKey === 'admin' ? '#0F5C4E' : auth.user?.roleKey === 'branch' ? '#D97706' : '#2563EB' }">

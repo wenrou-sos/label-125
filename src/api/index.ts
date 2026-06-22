@@ -1,7 +1,7 @@
 import { http } from '@/utils/request'
 import type {
   Coach, Vehicle, Schedule, Complaint, Payment, Salary, Maintenance,
-  OperationLog, SysUser, Role, RoleKey, Student, ExamRecord, StudentStatus,
+  OperationLog, SysUser, Role, RoleKey, Student, ExamRecord, StudentStatus, Notify,
 } from '@/types'
 
 // ===== 鉴权 =====
@@ -125,4 +125,11 @@ export const systemApi = {
     { id: 2, name: '分校管理员', key: 'branch', permissions: ['branch', 'coach', 'schedule', 'vehicle', 'finance', 'exam', 'system:log'] },
     { id: 3, name: '教练', key: 'coach', permissions: ['schedule:self', 'exam:self', 'coach:self'] },
   ],
+}
+
+// ===== 通知 =====
+export const notifyApi = {
+  list: (params?: { branchId?: number; unread?: boolean }) => http.get<Notify[]>('/api/notifies', params),
+  markRead: (id: number) => http.post<Notify>(`/api/notifies/${id}/read`),
+  markAllRead: () => http.post<{ count: number }>('/api/notifies/read-all'),
 }

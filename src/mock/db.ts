@@ -1,7 +1,7 @@
 import type {
   Branch, Coach, Vehicle, Student, Schedule, ExamRecord, Payment, Salary,
   Maintenance, Review, Complaint, SysUser, Role, OperationLog, VehicleStatus,
-  StudentStatus, PayMethod, ComplaintStatus,
+  StudentStatus, PayMethod, ComplaintStatus, Notify,
 } from '@/types'
 
 // ===== 确定性随机 =====
@@ -448,6 +448,74 @@ coaches.filter((c) => c.status === 1).forEach((c) => {
   SALARY_MONTHS.forEach((m) => salaries.push(computeSalary(c, m)))
 })
 
+// ===== 系统通知（从车辆、投诉、工资数据动态生成）=====
+function genNotifies(): Notify[] {
+  const list: Notify[] = []
+  let nid = 0
+  // 车辆到期提醒（30天内）
+  vehicles.forEach((v) => {
+    const insDays = daysBetween(today, v.inspectionExpire)
+    const insDaysNum = typeof insDays === 'number' ? insDays : Math.round((new Date(v.inspectionExpire).getTime() - new Date(today).getTime()) / 86400000)
+    if (insDaysNum <= 30) {
+      nid++
+      list.push({
+        id: nid,
+        type: 'vehicle',
+        title: '车辆年检即将到期',
+        content: `车牌 ${v.plate}（${getBranch(v.branchId)?.name}）将在 ${insDaysNum} 天后到期，请及时安排年检`,
+        link: '/vehicle/alert',
+        read: chance(0.35) ? 1 : 0,
+        createdAt: fmtDate(addDays(today, -rand(0, 15))) + ' ' + String(rand(8, 18)).padStart(2, '0') + ':' + String(rand(0, 59)).padStart(2, '0') + ':00',
+      })
+    }
+    const insDays2 = daysBetween(today, v.insuranceExpire)
+    const insDaysNum2 = typeof insDays2 === 'number' ? insDays2 : Math.round((new Date(v.insuranceExpire).getTime() - new Date(today).getTime()) / 86400000)
+    if (insDaysNum2 <= 30) {
+      nid++
+      list.push({
+        id: nid,
+        type: 'vehicle',
+        title: '车辆保险即将到期',
+        content: `车牌 ${v.plate}（${getBranch(v.branchId)?.name}）将在 ${insDaysNum2} 天后到期，请及时续保`,
+        link: '/vehicle/alert',
+        read: chance(0.35) ? 1 : 0,
+        createdAt: fmtDate(addDays(today, -rand(0, 15))) + ' ' + String(rand(8, 18)).padStart(2, '0') + ':' + String(rand(0, 59)).padStart(2, '0') + ':00',
+      })
+    }
+  })
+  // 投诉处理结果
+  complaints.filter((c) => c.status === 'resolved').forEach((c) => {
+    nid++
+    list.push({
+      id: nid,
+      type: 'complaint',
+      title: '投诉已处理完成',
+      content: `针对教练 ${getCoach(c.coachId)?.name} 的投诉已处理：${c.result || '已妥善解决'}`,
+      link: '/coach/complaint',
+      read: chance(0.5) ? 1 : 0,
+      createdAt: fmtDate(addDays(today, -rand(1, 10))) + ' ' + String(rand(9, 17)).padStart(2, '0') + ':' + String(rand(0, 59)).padStart(2, '0') + ':00',
+    })
+  })
+  // 工资核算完成
+  SALARY_MONTHS.forEach((m) => {
+    nid++
+    list.push({
+      id: nid,
+      type: 'salary',
+      title: '月度工资核算完成',
+      content: `${m} 工资已核算完成，共 ${coaches.filter((c) => c.status === 1).length} 名教练，请到工资核算页面查看并发放`,
+      link: '/finance/salary',
+      read: chance(0.6) ? 1 : 0,
+      createdAt: m + '-' + String(rand(1, 28)).padStart(2, '0') + ' ' + String(rand(10, 20)).padStart(2, '0') + ':' + String(rand(0, 59)).padStart(2, '0') + ':00',
+    })
+  })
+  list.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  list.forEach((n, i) => { n.id = i + 1 })
+  return list
+}
+function daysBetween(a: Date, b: string) { return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000) }
+export const notifies: Notify[] = genNotifies()
+
 // ===== 自增序列计数器 =====
 export const seq = {
   coach: coaches.length,
@@ -462,6 +530,7 @@ export const seq = {
   user: sysUsers.length,
   log: operationLogs.length,
   salary: salaries.length,
+  notify: notifies.length,
 }
 
 // ===== 查询辅助 =====

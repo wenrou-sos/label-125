@@ -1,6 +1,6 @@
 import type {
   ApiResponse, Branch, Coach, Vehicle, Schedule, Complaint, Payment, Salary,
-  Maintenance, OperationLog, ExamRecord,
+  Maintenance, OperationLog, ExamRecord, Notify,
 } from '@/types'
 import * as db from './db'
 
@@ -596,6 +596,43 @@ route('GET', '/api/system/logs', ({ query }) => {
   let list = db.operationLogs.slice()
   if (module && module !== 'all') list = list.filter((l) => l.module === module)
   return ok(list)
+})
+
+// ===================== 系统通知 =====================
+route('GET', '/api/notifies', ({ query }) => {
+  const branchId = query.branchId ? Number(query.branchId) : null
+  const onlyUnread = query.unread === '1'
+  let list = db.notifies.slice()
+  if (branchId) {
+    list = list.filter((n) => {
+      if (n.type === 'salary') return true
+      if (n.type === 'complaint') {
+        const c = db.complaints.find((x) => x.id === Number(n.content.match(/#\d+/)?.[0]?.slice(1)))
+        return !c || c.branchId === branchId
+      }
+      if (n.type === 'vehicle') {
+        const plate = n.content.match(/车牌\s(\S+)/)?.[1]
+        const v = db.vehicles.find((x) => x.plate === plate)
+        return !v || v.branchId === branchId
+      }
+      return true
+    })
+  }
+  if (onlyUnread) list = list.filter((n) => n.read === 0)
+  return ok(list)
+})
+
+route('POST', '/api/notifies/:id/read', ({ params }) => {
+  const id = Number(params.id)
+  const n = db.notifies.find((x) => x.id === id)
+  if (!n) return fail('通知不存在')
+  n.read = 1
+  return ok(n)
+})
+
+route('POST', '/api/notifies/read-all', () => {
+  db.notifies.forEach((n) => { n.read = 1 })
+  return ok({ count: db.notifies.length })
 })
 
 // ===================== 派发 =====================

@@ -178,6 +178,25 @@ export interface OperationLog {
   createdAt: string
 }
 
+// ===== 系统通知 =====
+export type NotifyType = 'vehicle' | 'complaint' | 'salary'
+
+export interface Notify {
+  id: number
+  type: NotifyType
+  title: string
+  content: string
+  link?: string
+  read: 0 | 1
+  createdAt: string
+}
+
+export const NOTIFY_TYPE_MAP: Record<NotifyType, { label: string; icon: string; color: string }> = {
+  vehicle: { label: '车辆提醒', icon: 'Van', color: '#D97706' },
+  complaint: { label: '投诉结果', icon: 'Warning', color: '#DC2626' },
+  salary: { label: '工资核算', icon: 'Money', color: '#0F5C4E' },
+}
+
 // ===== 统一响应 =====
 export interface ApiResponse<T> {
   code: number
