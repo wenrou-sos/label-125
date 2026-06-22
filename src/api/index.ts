@@ -64,7 +64,7 @@ export interface ScheduleRow extends Schedule {
 export const scheduleApi = {
   list: (params: { coachId?: number; branchId?: number; start?: string; end?: string }) => http.get<ScheduleRow[]>('/api/schedules', params),
   check: (params: any) => http.get<any>('/api/schedules/check', params),
-  create: (data: Partial<Schedule>) => http.post<Schedule>('/api/schedules', data),
+  create: (data: Partial<Schedule> & { force?: boolean }) => http.post<Schedule>('/api/schedules', data),
   importBatch: (list: any[]) => http.post<{ added: number; total: number }>('/api/schedules/import', { list }),
   remove: (id: number) => http.delete(`/api/schedules/${id}`),
 }

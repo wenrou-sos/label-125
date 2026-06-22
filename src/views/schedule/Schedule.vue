@@ -73,12 +73,14 @@ async function submit() {
   if (!form.coachId || !form.studentId || !form.scheduleDate) { ElMessage.warning('请补全教练、学员与日期'); return }
   const slot = slotOf(form.slot)
   const check = await scheduleApi.check({ coachId: form.coachId, studentId: form.studentId, date: form.scheduleDate, startTime: slot.start, endTime: slot.end })
+  let force = false
   if (check.hasConflict) {
     try {
       await ElMessageBox.confirm('检测到该时段已存在排班冲突（教练或学员已安排），是否仍要继续？', '排班冲突提示', { type: 'warning', confirmButtonText: '仍要保存', cancelButtonText: '取消' })
+      force = true
     } catch { return }
   }
-  await scheduleApi.create({ coachId: form.coachId, studentId: form.studentId, scheduleDate: form.scheduleDate, startTime: slot.start, endTime: slot.end, subject: form.subject, vehicleId: form.vehicleId })
+  await scheduleApi.create({ coachId: form.coachId, studentId: form.studentId, scheduleDate: form.scheduleDate, startTime: slot.start, endTime: slot.end, subject: form.subject, vehicleId: form.vehicleId, force })
   ElMessage.success('排班已创建')
   dialogVisible.value = false
   loadData()

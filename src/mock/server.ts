@@ -318,14 +318,16 @@ route('GET', '/api/schedules/check', ({ query }) => {
 })
 
 route('POST', '/api/schedules', ({ body }) => {
-  const check = db.schedules.find((s) =>
-    s.coachId === body.coachId && s.scheduleDate === body.scheduleDate &&
-    !(body.endTime <= s.startTime || body.startTime >= s.endTime))
-  const sCheck = db.schedules.find((s) =>
-    s.studentId === body.studentId && s.scheduleDate === body.scheduleDate &&
-    !(body.endTime <= s.startTime || body.startTime >= s.endTime))
-  if (check) return fail(`教练该时段已有安排（${check.startTime}-${check.endTime}），请调整时间`)
-  if (sCheck) return fail(`学员该时段已有安排（${sCheck.startTime}-${sCheck.endTime}），请调整时间`)
+  if (!body.force) {
+    const check = db.schedules.find((s) =>
+      s.coachId === body.coachId && s.scheduleDate === body.scheduleDate &&
+      !(body.endTime <= s.startTime || body.startTime >= s.endTime))
+    const sCheck = db.schedules.find((s) =>
+      s.studentId === body.studentId && s.scheduleDate === body.scheduleDate &&
+      !(body.endTime <= s.startTime || body.startTime >= s.endTime))
+    if (check) return fail(`教练该时段已有安排（${check.startTime}-${check.endTime}），请调整时间`)
+    if (sCheck) return fail(`学员该时段已有安排（${sCheck.startTime}-${sCheck.endTime}），请调整时间`)
+  }
   db.seq.schedule++
   const sch: Schedule = {
     id: db.seq.schedule, coachId: body.coachId, vehicleId: body.vehicleId, studentId: body.studentId,
@@ -448,8 +450,8 @@ route('GET', '/api/finance/salary', ({ query }) => {
   })))
 })
 
-route('POST', '/api/finance/salary/calculate', ({ query }) => {
-  const month = (query.month as string) || todayISO.slice(0, 7)
+route('POST', '/api/finance/salary/calculate', ({ body }) => {
+  const month = (body.month as string) || todayISO.slice(0, 7)
   // 重新计算本月所有教练工资
   db.coaches.filter((c) => c.status === 1).forEach((c) => {
     const exist = db.salaries.find((s) => s.coachId === c.id && s.month === month)
@@ -539,7 +541,7 @@ route('POST', '/api/system/users', ({ body }) => {
   const u = {
     id: db.seq.user, username: body.username, password: body.password || '123456',
     realName: body.realName, roleId: body.roleId, roleKey: body.roleKey,
-    branchId: body.branchId || null, status: 1 as 1 | 0, phone: body.phone || '', createdAt: todayISO,
+    branchId: body.branchId || null, status: body.status !== undefined ? body.status as 1 | 0 : 1, phone: body.phone || '', createdAt: todayISO,
   }
   db.sysUsers.push(u)
   log('系统管理', '新增用户', `新增用户 ${u.username}`)
