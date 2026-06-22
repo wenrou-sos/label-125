@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Element Plus 主题变量覆盖 ===== */
+:root {
+  --el-color-primary: #0f5c4e;
+  --el-color-primary-light-3: #578d83;
+  --el-color-primary-light-5: #87ada6;
+  --el-color-primary-light-7: #b7cec8;
+  --el-color-primary-light-8: #cfd9d5;
+  --el-color-primary-light-9: #e7ecea;
+  --el-color-primary-dark-2: #0c493e;
+
+  --el-color-success: #16a34a;
+  --el-color-success-light-9: #e7f5ec;
+  --el-color-warning: #f59e0b;
+  --el-color-warning-light-9: #fdf3e3;
+  --el-color-danger: #dc2626;
+  --el-color-danger-light-9: #fbe5e5;
+  --el-color-error: #dc2626;
+  --el-color-info: #2563eb;
+  --el-color-info-light-9: #e6edfb;
+
+  --el-border-radius-base: 6px;
+  --el-border-radius-small: 4px;
+  --el-border-radius-round: 20px;
+  --el-border-color: #e3ddcf;
+  --el-border-color-light: #ece7d9;
+  --el-border-color-lighter: #f1ede2;
+  --el-fill-color-blank: #ffffff;
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: #f6f4ee;
+  --el-text-color-primary: #1f2a26;
+  --el-text-color-regular: #3a4a44;
+  --el-text-color-secondary: #6b7a74;
+  --el-font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --el-box-shadow-light: 0 1px 2px rgba(15, 92, 78, 0.04), 0 8px 24px -12px rgba(15, 92, 78, 0.12);
+
+  /* 品牌设计令牌 */
+  --brand-primary: #0f5c4e;
+  --brand-primary-deep: #0c493e;
+  --brand-accent: #d97706;
+  --brand-canvas: #f6f4ee;
+  --brand-card: #ffffff;
+  --brand-ink: #1f2a26;
+  --brand-soft: #3a4a44;
+  --brand-mute: #6b7a74;
+  --brand-sunken: #efebe1;
+  --brand-line: #e3ddcf;
+}
+
+/* ===== 全局基础 ===== */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  color: var(--brand-ink);
+  background-color: var(--brand-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 数字 / 数据展示字体 */
+.font-num {
+  font-family: 'Bahnschrift', 'DIN Alternate', 'Helvetica Neue', sans-serif;
+  font-feature-settings: 'tnum';
+}
+
+.font-display {
+  font-family: 'Smiley Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+/* ===== 滚动条 ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 92, 78, 0.18);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 92, 78, 0.32);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ===== 业务通用工具类 ===== */
+.page-wrapper {
+  padding: 20px 24px 32px;
+}
+@media (max-width: 768px) {
+  .page-wrapper {
+    padding: 14px 14px 24px;
+  }
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--brand-ink);
+  letter-spacing: 0.5px;
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--brand-mute);
+  margin-top: 2px;
+}
+
+.section-card {
+  background: var(--brand-card);
+  border-radius: 12px;
+  border: 1px solid var(--brand-line);
+  box-shadow: 0 1px 2px rgba(15, 92, 78, 0.04), 0 8px 24px -16px rgba(15, 92, 78, 0.18);
+}
+
+.kpi-value {
+  font-family: 'Bahnschrift', 'DIN Alternate', 'Helvetica Neue', sans-serif;
+  font-weight: 600;
+  font-feature-settings: 'tnum';
+  line-height: 1;
+}
+
+/* 状态色点 */
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.status-dot.available { background: #16a34a; }
+.status-dot.repair { background: #dc2626; }
+.status-dot.inspecting { background: #f59e0b; }
+
+/* 卡片悬浮 */
+.hover-rise {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.hover-rise:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px -8px rgba(15, 92, 78, 0.28);
+}
+
+/* Element Plus 细节调优 */
+.el-card {
+  border-radius: 12px !important;
+  border-color: var(--brand-line) !important;
+}
+.el-table {
+  --el-table-border-color: #ece7d9;
+  --el-table-header-bg-color: #f1ede2;
+  --el-table-header-text-color: #3a4a44;
+  --el-table-row-hover-bg-color: #f6f4ee;
+}
+.el-table th.el-table__cell {
+  font-weight: 600;
+}
+.el-button--primary {
+  --el-button-bg-color: var(--brand-primary);
+  --el-button-border-color: var(--brand-primary);
+  --el-button-hover-bg-color: var(--brand-primary-deep);
+  --el-button-hover-border-color: var(--brand-primary-deep);
+  --el-button-active-bg-color: var(--brand-primary-deep);
+  --el-button-active-border-color: var(--brand-primary-deep);
+}
+.el-tag {
+  border-radius: 6px;
+}
+.el-menu {
+  border-right: none !important;
+}
+
+/* 渐入动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
